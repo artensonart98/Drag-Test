@@ -40,7 +40,7 @@ Create a data access object
 public interface UserDao {
 
     @Query("SELECT * FROM table_users")
-    DataSource.Factory<Integer, User> getUsers(); //This will return a DataSource
+    DataSource.Factory<Integer, User> getUsers();
        
     @Query("DELETE FROM table_users")
     void deleteAll();
@@ -50,10 +50,10 @@ public interface UserDao {
 }
 ```
 
-### Note: You must have these two methods in your DAO. 
+### Note: You must have these 3 methods in your DAO. 
 - One that return a DataSource
-- Other that deletes all the data inside a table
-- 3rd one that adds a list to the db
+- Other that deletes all the data from your table
+- 3rd one that adds a list of object in your table
 
 ### Step 3. Specify your DAO in your Room DB class
 
@@ -68,7 +68,7 @@ public abstract class DragDatabase extends RoomDatabase {
 }
 ```
 
-**That's all the Room related stuff. Now lets change our endpoint interface a bit
+Now lets change our endpoint interface a bit
 
 ### Step 4. Change Endpoint interface
 Your endpoint interface must return a `Call` object with the type `DragResponseWrapper<PaginatedResponse<YourType>>`
@@ -76,11 +76,11 @@ Your endpoint interface must return a `Call` object with the type `DragResponseW
 ```
 @GET("your/blah/endpoint")
 Call<DragResponseWrapper<PaginatedResponse<User>>> getUsers(
-    @Path("anything") String anythingYouWantAsParams,
-    @Query("pageNo") int pageNo, //this is important
-    @Query("size") int size //this is important
+    @Query("pageNo") int pageNo,
+    @Query("size") int size 
 );
 ```
+`@Query("pageNo")` & `@Query("size")` are important. Also pass any other param if you want to.
 
 **You must use `DragResponseWrapper` and `PaginatedResponse` from the library package not the `app` package**
 
@@ -147,14 +147,14 @@ Now you may get an instance of the paged list by creating an instance of the cre
 ```
 UsersRepository repository = new UsersRepository(context);
 repository.getPagedList();
-repository.getNetworkStateLiveData(); //you can use this to update your UI in case of data LOADING, SUCCESS, FAILURE events
+repository.getNetworkStateLiveData();
 ```
 
 If you created a singleton for your repo, then use this:
 ```
 UsersRepository repository = UsersRepository.getInstance(context);
-repository.getPagedList(); //this will return a paged list 
-repository.getNetworkStateLiveData(); //you can use this to update your UI in case of data LOADING, SUCCESS, FAILURE events
+repository.getPagedList(); 
+repository.getNetworkStateLiveData();
 ```
 
 - **getPagedList()** will return a paged list that you pass to your normally created PagedListAdapter
